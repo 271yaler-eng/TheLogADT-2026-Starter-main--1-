@@ -18,6 +18,8 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // and assign values to instance variables.
     public ArrayLog(String name)
     {
+        this.name = name;
+        this.size = 0;
         // cannot create a generic array object, so has to be cast
         // from an Object back into the generic in order to compile
         this.log = (T[])new Object[4];
@@ -26,49 +28,71 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // Returns the name of this StringLog.
     public String getName()
     {
-        return "";
+        return this.name;
     }
 
     // Returns the logical size of this StringLog.
     public int size()
     {
-        return -1;
+        return this.size;
     }
     
     // Returns true if this list contains no elements.
     public boolean isEmpty()
     {
-        return false;
+        return this.size == 0;
     }
     
     // Returns true if this list is completely full.
     public boolean isFull()
     {
-        return false;
+        return this.size == this.log.length;
     }
 
     // Appends the specified element to the end of this list.
     public void add(T element)
     {
+        if (isFull())
+        {
+            T[] newLog = (T[])new Object[log.length * 2];
+            for (int i = 0; i < log.length; i++)
+            {
+                newLog[i] = log[i];
+            }
+            log = newLog;
+        }
+        log[size] = element;
+        size++;
     }
   
     // Returns the element at the specified position in this list.
     public T get(int index)
     {   
-        return null;
+        if (index < 0 || index >= size)
+        {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
+        return log[index];
     }
     
     // Returns the index of the first occurance of the specified element
     // in this list, or -1 if this list does not contain the element.
     public int indexOf(T element)
     {
+        for(int i = 0; i < size; i++)
+        {
+            if(log[i].equals(element))
+            {
+                return i;
+            }
+        }
         return -1;
     }
     
     // Returns true if this list contains the specified element.
     public boolean contains(T element)
     {
-        return false;
+        return indexOf(element) != -1;
     }
     
     // Returns a formatted string representation of this StringLog.
