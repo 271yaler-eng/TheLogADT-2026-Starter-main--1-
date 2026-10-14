@@ -150,23 +150,77 @@ public class LinkedLog<T> implements EnhancedLogInterface<T>
     // inserts the specified element at the specified position in this list
     public void add(int index, T element)
     {
+        if(index < 0 || index > this.size())
+        {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + this.size());
+        }
+        else if(index == 0)
+        {
+            LLNode<T> newNode = new LLNode<T>(element);
+            newNode.setLink(this.log);
+            this.log = newNode;
+        }
+        else
+        {
+            LLNode<T> current = this.log;
+            for(int i = 0; i < index - 1; i++)
+            {
+                current = current.getLink();
+            }
+            LLNode<T> newNode = new LLNode<T>(element);
+            newNode.setLink(current.getLink());
+            current.setLink(newNode);
+        }
+        this.size++;
     }
     
     // removes the element at the specified position in this list
     public T remove(int index)
     {
-        return null;
+        if(index < 0 || index >= this.size())
+        {
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + this.size());
+        }
+        else if (index == 0)
+        {
+            T removedElement = this.log.getInfo();
+            this.log = this.log.getLink();
+            this.size--;
+            return removedElement;
+        }
+        else
+        {
+            LLNode<T> current = this.log;
+            for(int i = 0; i < index - 1; i++)
+            {
+                current = current.getLink();
+            }
+            T removedElement = current.getLink().getInfo();
+            current.setLink(current.getLink().getLink());
+            this.size--;
+            return removedElement; 
+        }
     }
     
     // removes the first occurance of the specified element from this
     // list, if it is present
     public boolean remove(T element)
     {
+        for(int i = 0; i < this.size(); i++)
+        {
+            if(this.get(i).equals(element))
+            {
+                this.remove(i);
+                return true;
+            }
+        }
         return false;
     }
         
     // removes all of the elements from this list
     public void clear()
     {
+        this.log = null;
+        this.size = 0;
     }
 }

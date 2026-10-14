@@ -118,7 +118,7 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // Inserts the specified element at the specified position in this list.
     public void add(int index, T element)
     {
-        if (index < 0 || index > size)
+        if(index < 0 || index >= size)
         {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
@@ -131,7 +131,7 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
             }
             log = newLog;
         }
-        for (int i = size; i > index; i--)
+        for(int i = size; i > index; i--)
         {
             log[i] = log[i - 1];
         }
@@ -144,18 +144,28 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // are set to null.
     public T remove(int index)
     {
-        if (index < 0 || index >= size)
+        if(index < 0 || index >= size)
         {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
-        T oldElement = log[index];
-        for (int i = index; i < size - 1; i++)
+        T removedElement = log[index];
+        for(int i = index; i < size - 1; i++)
         {
-            log[i] = log[i + 1];
+            log[i] = log[i+1];
         }
         log[size - 1] = null;
         size--;
-        return oldElement;
+
+        if(size < log.length / 4 && log.length > 4 && size > 0)
+        {
+            T[] newLog = (T[])new Object[log.length / 2];
+            for(int i = 0; i < size; i++)
+            {
+                newLog[i] = log[i];
+            }
+            log = newLog;
+        }
+        return removedElement;
     }
     
     // Removes the first occurance of the specified element from this
@@ -163,11 +173,13 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // removed), false otherwise.
     public boolean remove(T element)
     {
-        int index = indexOf(element);
-        if (index != -1)
+        for(int i = 0; i < size; i++)
         {
-            remove(index);
-            return true;
+            if(log[i].equals(element))
+            {
+                remove(i);
+                return true;
+            }
         }
         return false;
     }
@@ -175,7 +187,7 @@ public class ArrayLog<T> implements EnhancedLogInterface<T>
     // Removes all of the elements from this list.
     public void clear()
     {
-        for (int i = 0; i < size; i++)
+        for(int i = 0; i < size; i++)
         {
             log[i] = null;
         }
